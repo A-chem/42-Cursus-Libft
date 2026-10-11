@@ -1,7 +1,5 @@
 # Libft
 
-[![Architecture diagram](https://gitdiagram.com/diagram-badge.svg)](https://gitdiagram.com/a-chem/42-cursus-libft?utm_source=readme&utm_medium=badge)
-
 Libft is a foundational project from the 42 curriculum. It consists of reimplementing a carefully selected set of standard C library functions from scratch, with a focus on low-level memory management, pointer arithmetic, string manipulation, and clean, reusable code.
 
 The resulting `libft.a` static library is designed to be reused in future C projects throughout the 42 cursus.
