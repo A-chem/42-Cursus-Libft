@@ -1,182 +1,142 @@
 # Libft
 
-Libft is a foundational C project from the 42 curriculum. The purpose of this project is to recreate a practical subset of the standard C library from scratch, without relying on the original implementations.
+A reusable static C library that reimplements a practical subset of the standard C library, created for the [42 curriculum](https://www.42.fr/). The project focuses on low-level memory manipulation, string processing, dynamic allocation, function pointers, and linked-list operations.
 
-The project focuses on understanding how low-level functions work internally and on developing strong skills in memory management, pointer arithmetic, string processing, dynamic allocation, linked lists, and modular compilation.
+The build produces `libft.a`, which can be linked into other C programs.
 
-The result is a reusable static library named `libft.a`, which can be linked with future C projects.
+## Badges
 
-## Project Goals
+[![Language: C](https://img.shields.io/badge/language-C-blue.svg)](https://github.com/A-chem/42-Cursus-Libft)
+[![Make](https://img.shields.io/badge/build-Makefile-orange.svg)](https://www.gnu.org/software/make/)
 
-Libft is designed to help develop the ability to:
+## Features
 
-- Work safely with pointers and raw memory
-- Understand how strings are represented in C
-- Allocate, initialize, and release dynamic memory
-- Handle edge cases and allocation failures
-- Use function pointers and callbacks
-- Implement and manipulate linked lists
-- Create and link a static library
-- Write clean, reusable, and maintainable C code
+- Character classification and case conversion.
+- Byte-level memory operations.
+- Bounded string copying, concatenation, comparison, and searching.
+- Dynamic string creation and transformation.
+- Integer-to-string and string-to-integer conversion.
+- File-descriptor output helpers.
+- Optional generic singly linked-list operations.
+- Static-library packaging through `ar`.
+- Strict compilation with `-Wall -Wextra -Werror`.
+
+## Tech Stack
+
+- **Language:** C
+- **Build system:** GNU Make-compatible `Makefile`
+- **Compiler:** `cc`
+- **Library format:** Static archive (`libft.a`)
+- **Runtime dependencies:** C standard library headers and POSIX `unistd.h`; no third-party dependencies
 
 ## Architecture
 
-The project follows a simple static-library architecture:
+Libft is organized as a collection of focused C implementations exposed through one public header. The Makefile compiles each source file into an object file and archives the objects into `libft.a`.
 
-```text
-                    ┌──────────────────────┐
-                    │      User program    │
-                    │       main.c         │
-                    └──────────┬───────────┘
-                               │
-                               │ #include "libft.h"
-                               │ link with -lft
-                               ▼
-                    ┌──────────────────────┐
-                    │       libft.a        │
-                    │   Static library     │
-                    └──────────┬───────────┘
-                               │
-       ┌───────────────────────┼───────────────────────┐
-       ▼                       ▼                       ▼
-┌───────────────┐      ┌───────────────┐      ┌───────────────┐
-│ Character and │      │ Memory and    │      │ String and    │
-│ conversion    │      │ allocation    │      │ conversion    │
-│ functions     │      │ functions     │      │ functions     │
-└───────────────┘      └───────────────┘      └───────────────┘
-                               │
-                               ▼
-                    ┌──────────────────────┐
-                    │ Bonus linked lists   │
-                    │ t_list operations    │
-                    └──────────────────────┘
+```mermaid
+flowchart TD
+    A[User program] -->|include libft.h| H[src/libft.h]
+    A -->|link with -L. -lft| L[libft.a]
+    H --> C[Character and conversion functions]
+    H --> M[Memory and allocation functions]
+    H --> S[String functions]
+    H --> O[File-descriptor output functions]
+    H --> B[Bonus t_list functions]
+    C --> L
+    M --> L
+    S --> L
+    O --> L
+    B --> L
 ```
 
 ### Build flow
 
-1. Each `.c` file is compiled into an object file `.o`.
-2. The object files are archived by `ar` into `libft.a`.
-3. A user program includes `libft.h`.
-4. The linker connects the program with `libft.a`.
-5. The program can call any function exposed by the library.
-
-### Responsibility of each file
-
-- `src/libft.h`: public API, function prototypes, required headers, and the `t_list` structure.
-- `src/*.c`: individual implementations of the library functions.
-- `src/Makefile`: compilation, archiving, cleaning, and bonus targets.
-- `Subject/en.subject.pdf`: official project subject.
+1. `cc` compiles the mandatory `.c` files with `-Wall -Wextra -Werror`.
+2. The resulting `.o` files are archived into `libft.a` with `ar rcs`.
+3. A consuming program includes `src/libft.h`.
+4. The linker connects the program to the static library with `-L` and `-lft`.
+5. The optional bonus target adds the linked-list object files to the archive.
 
 ## Project Structure
 
 ```text
 .
-├── README.md
+├── README.md              # Project documentation
 ├── Subject/
-│   └── en.subject.pdf
+│   └── en.subject.pdf     # English 42 project subject
 └── src/
-    ├── Makefile
-    ├── libft.h
-    ├── ft_is*.c
-    ├── ft_mem*.c
-    ├── ft_str*.c
-    ├── ft_atoi.c
-    ├── ft_itoa.c
-    ├── ft_put*.c
-    └── ft_lst*_bonus.c
+    ├── Makefile           # Build, cleanup, and bonus targets
+    ├── libft.h            # Public declarations and t_list definition
+    ├── ft_is*.c           # Character classification
+    ├── ft_mem*.c          # Memory manipulation and allocation helpers
+    ├── ft_str*.c          # String operations and transformations
+    ├── ft_atoi.c          # String-to-integer conversion
+    ├── ft_itoa.c          # Integer-to-string conversion
+    ├── ft_put*_fd.c       # File-descriptor output helpers
+    └── ft_lst*_bonus.c    # Bonus singly linked-list operations
 ```
 
-## Complete Function Reference
+## Function Reference
+
+All public functions are declared in [`src/libft.h`](src/libft.h).
 
 ### Character Classification and Conversion
 
-| Function | Description |
-|---|---|
-| `ft_isalpha` | Checks whether a character is an uppercase or lowercase letter. |
-| `ft_isdigit` | Checks whether a character is a decimal digit from `0` to `9`. |
-| `ft_isalnum` | Checks whether a character is alphabetic or numeric. |
-| `ft_isascii` | Checks whether a value belongs to the ASCII range from `0` to `127`. |
-| `ft_isprint` | Checks whether a character is printable. |
+| Function | Purpose |
+| --- | --- |
+| `ft_isalpha` | Tests whether a value is an alphabetic character. |
+| `ft_isdigit` | Tests whether a value is a decimal digit. |
+| `ft_isalnum` | Tests whether a value is alphabetic or numeric. |
+| `ft_isascii` | Tests whether a value is in the ASCII range. |
+| `ft_isprint` | Tests whether a value is printable. |
 | `ft_toupper` | Converts a lowercase letter to uppercase. |
 | `ft_tolower` | Converts an uppercase letter to lowercase. |
 
-These functions are useful when validating input and processing characters without using the standard `<ctype.h>` implementations.
+### Memory and Allocation
 
-### Memory Manipulation
+| Function | Purpose |
+| --- | --- |
+| `ft_memset` | Fills a memory region with a byte value. |
+| `ft_bzero` | Sets a memory region to zero. |
+| `ft_memcpy` | Copies bytes between non-overlapping regions. |
+| `ft_memmove` | Copies bytes while supporting overlapping regions. |
+| `ft_memchr` | Searches a memory region for a byte. |
+| `ft_memcmp` | Compares two memory regions. |
+| `ft_calloc` | Allocates zero-initialized memory. |
+| `ft_strdup` | Allocates and duplicates a string. |
 
-| Function | Description |
-|---|---|
-| `ft_memset` | Fills a memory area with a specific byte value. |
-| `ft_bzero` | Sets a memory area to zero. |
-| `ft_memcpy` | Copies a block of memory from a source address to a destination address. |
-| `ft_memmove` | Copies memory safely when source and destination regions overlap. |
-| `ft_memchr` | Searches for the first occurrence of a byte in a memory block. |
-| `ft_memcmp` | Compares two memory blocks byte by byte. |
-| `ft_calloc` | Allocates memory for multiple elements and initializes it to zero. |
-| `ft_strdup` | Allocates memory and creates a duplicate of a string. |
+### String Operations
 
-These functions demonstrate pointer casting, byte-level access, buffer boundaries, and safe dynamic allocation.
-
-### String Measurement and Searching
-
-| Function | Description |
-|---|---|
+| Function | Purpose |
+| --- | --- |
 | `ft_strlen` | Returns the length of a null-terminated string. |
-| `ft_strchr` | Finds the first occurrence of a character in a string. |
-| `ft_strrchr` | Finds the last occurrence of a character in a string. |
-| `ft_strncmp` | Compares up to `n` characters from two strings. |
-| `ft_strnstr` | Searches for a substring inside another string with a maximum length. |
-| `ft_strlcpy` | Copies a string into a destination buffer with size awareness. |
-| `ft_strlcat` | Appends a string to a destination buffer with size awareness. |
+| `ft_strchr` | Finds the first occurrence of a character. |
+| `ft_strrchr` | Finds the last occurrence of a character. |
+| `ft_strncmp` | Compares up to `n` characters. |
+| `ft_strnstr` | Searches for a substring within a bounded region. |
+| `ft_strlcpy` | Copies a string with destination-size awareness. |
+| `ft_strlcat` | Appends a string with destination-size awareness. |
+| `ft_substr` | Allocates a substring. |
+| `ft_strjoin` | Allocates the concatenation of two strings. |
+| `ft_strtrim` | Removes characters from both ends of a string. |
+| `ft_split` | Splits a string into a null-terminated array. |
+| `ft_strmapi` | Builds a new string using a callback. |
+| `ft_striteri` | Applies a callback to each character in place. |
 
-These functions rely on the C string convention: a string is an array of characters terminated by `\\0`.
+### Conversion and Output
 
-### String Creation and Transformation
-
-| Function | Description |
-|---|---|
-| `ft_substr` | Creates a newly allocated substring starting at a specified index. |
-| `ft_strjoin` | Allocates and returns the concatenation of two strings. |
-| `ft_strtrim` | Removes characters from the beginning and end of a string. |
-| `ft_split` | Splits a string into a null-terminated array of strings using a delimiter. |
-| `ft_strmapi` | Creates a new string by applying a callback to every character. |
-| `ft_striteri` | Applies a callback to every character of an existing string. |
-
-These functions demonstrate ownership of allocated memory, helper functions, cleanup on failure, and function pointers.
-
-### Number Conversion
-
-| Function | Description |
-|---|---|
-| `ft_atoi` | Converts the numeric part of a string into an integer. |
-| `ft_itoa` | Converts an integer into a newly allocated null-terminated string. |
-
-Important edge cases include whitespace, optional signs, zero, negative numbers, and the limits of the `int` type.
-
-### File-Descriptor Output
-
-| Function | Description |
-|---|---|
+| Function | Purpose |
+| --- | --- |
+| `ft_atoi` | Converts the numeric portion of a string to an `int`. |
+| `ft_itoa` | Allocates a string representation of an `int`. |
 | `ft_putchar_fd` | Writes one character to a file descriptor. |
 | `ft_putstr_fd` | Writes a string to a file descriptor. |
 | `ft_putendl_fd` | Writes a string followed by a newline. |
 | `ft_putnbr_fd` | Writes an integer to a file descriptor. |
 
-A file descriptor identifies an input or output stream. Common descriptors are:
+### Bonus Linked Lists
 
-- `0`: standard input
-- `1`: standard output
-- `2`: standard error
-
-Example:
-
-```c
-ft_putendl_fd("Hello, Libft!", 1);
-```
-
-### Bonus Linked-List Functions
-
-The bonus part uses the following structure:
+The bonus API uses the generic node type declared in `src/libft.h`:
 
 ```c
 typedef struct s_list
@@ -186,112 +146,65 @@ typedef struct s_list
 } t_list;
 ```
 
-| Function | Description |
-|---|---|
-| `ft_lstnew` | Allocates and initializes a new list node. |
-| `ft_lstadd_front` | Inserts a node at the beginning of a list. |
-| `ft_lstsize` | Counts the number of nodes in a list. |
-| `ft_lstlast` | Returns the last node of a list. |
-| `ft_lstadd_back` | Appends a node to the end of a list. |
-| `ft_lstdelone` | Deletes one node and frees its content with a callback. |
-| `ft_lstclear` | Deletes every node in a list and sets the list pointer to `NULL`. |
-| `ft_lstiter` | Applies a callback to the content of every node. |
-| `ft_lstmap` | Creates a new list by transforming every node's content. |
+| Function | Purpose |
+| --- | --- |
+| `ft_lstnew` | Allocates and initializes a node. |
+| `ft_lstadd_front` | Adds a node to the beginning of a list. |
+| `ft_lstsize` | Counts list nodes. |
+| `ft_lstlast` | Returns the last node. |
+| `ft_lstadd_back` | Adds a node to the end of a list. |
+| `ft_lstdelone` | Deletes one node using a cleanup callback. |
+| `ft_lstclear` | Deletes all nodes and clears the list pointer. |
+| `ft_lstiter` | Applies a callback to each node's content. |
+| `ft_lstmap` | Builds a transformed list using callbacks. |
 
-The list stores content as `void *`, which makes it generic: the same list implementation can store strings, integers, structures, or any other data type.
+## Prerequisites
 
-## Key C Concepts
+- A Unix-like environment.
+- A C compiler available as `cc`.
+- GNU Make or a compatible `make` implementation.
 
-### Pointers
+The repository does not define a minimum compiler version, operating-system version, package manager, environment file, database, or external runtime service.
 
-Pointers store memory addresses. Libft uses them to read, write, copy, and compare memory directly.
+## Installation and Build
 
-```c
-char *ptr;
-ptr = buffer;
-```
-
-Pointer arithmetic allows the implementation to move through arrays and strings one element at a time.
-
-### `void *` and generic memory
-
-Functions such as `ft_memcpy`, `ft_memset`, and the linked-list functions use `void *` so they can work with different data types. The data is cast to an appropriate pointer type before it is accessed.
-
-### Dynamic memory
-
-Functions such as `ft_calloc`, `ft_strdup`, `ft_substr`, `ft_strjoin`, and `ft_split` allocate memory with `malloc`. Every successful allocation must eventually be released with `free`.
-
-A good allocation pattern is:
-
-```c
-ptr = malloc(size);
-if (!ptr)
-    return (NULL);
-```
-
-### Null-terminated strings
-
-C strings do not store their length automatically. They end with the null character `\\0`. Functions must stop reading when they reach this terminator and must reserve space for it when allocating a new string.
-
-### Function pointers
-
-`ft_strmapi`, `ft_striteri`, `ft_lstiter`, and `ft_lstmap` accept functions as arguments. This allows the caller to customize the operation while Libft manages the iteration.
-
-Example callback type:
-
-```c
-char (*f)(unsigned int, char)
-```
-
-### Error handling
-
-Allocation can fail. Functions that allocate memory return `NULL` when they cannot complete successfully. More complex functions, such as `ft_split` and `ft_lstmap`, must also free all previously allocated data before returning an error.
-
-### Integer overflow
-
-When calculating allocation sizes, multiplication can overflow. For example, `count * size` must be checked before calling `malloc`; otherwise, the program may allocate less memory than required.
-
-### Static libraries
-
-A static library is an archive of object files. In this project, `ar rcs` combines the compiled object files into `libft.a`. The library is copied into the final executable during linking.
-
-## Compilation
-
-The project uses `cc` with strict compiler flags:
-
-```text
--Wall -Wextra -Werror
-```
-
-Build the mandatory library:
+Clone the repository and build the mandatory library:
 
 ```bash
-cd src
+git clone https://github.com/A-chem/42-Cursus-Libft.git
+cd 42-Cursus-Libft/src
 make
 ```
 
-Build and add the bonus linked-list functions:
+This creates `src/libft.a` and the intermediate object files in `src/`.
+
+To add the bonus linked-list functions, run the mandatory build first and then:
 
 ```bash
 make bonus
 ```
 
+The bonus target archives the bonus object files into the existing `libft.a`.
+
 ## Makefile Commands
 
+Run these commands from `src/`:
+
 | Command | Description |
-|---|---|
-| `make` | Compiles mandatory functions and creates `libft.a`. |
-| `make bonus` | Compiles and adds the bonus linked-list functions. |
-| `make clean` | Removes object files. |
+| --- | --- |
+| `make` | Builds the mandatory functions and creates `libft.a`. |
+| `make bonus` | Compiles and archives the bonus linked-list functions. |
+| `make clean` | Removes mandatory and bonus object files. |
 | `make fclean` | Removes object files and `libft.a`. |
-| `make re` | Performs a full rebuild. |
+| `make re` | Performs `fclean` followed by a full mandatory build. |
 
 ## Usage
 
-Create a program such as `main.c` inside the `src` directory:
+Create a C program that includes the public header and link it against the archive. For example:
 
 ```c
 #include "libft.h"
+#include <stdlib.h>
 
 int main(void)
 {
@@ -307,37 +220,133 @@ int main(void)
 }
 ```
 
-Compile and link it with the library:
+From `src/`, compile and link the program:
 
 ```bash
 cc -Wall -Wextra -Werror main.c -I. -L. -lft -o program
-```
-
-Run the executable:
-
-```bash
 ./program
 ```
 
-Compiler options:
+Compiler options used above:
 
 - `-I.` searches the current directory for `libft.h`.
 - `-L.` searches the current directory for `libft.a`.
-- `-lft` links the Libft static library.
-- `-o program` names the output executable.
+- `-lft` links the `libft.a` archive.
+- `-o program` names the executable.
 
-## Quality and Standards
+If the consuming program is outside `src/`, adjust the include and library paths. For example, from the repository root after building:
 
-The project follows the strict standards of the 42 curriculum, with an emphasis on:
+```bash
+cc -Wall -Wextra -Werror main.c -Isrc -Lsrc -lft -o program
+```
 
-- Correct behavior and edge-case handling
-- Clean and readable C code
-- Responsible memory management
-- Small, focused functions
-- Reusable helper logic
-- Compilation without warnings
+## Memory-Management Notes
+
+Several functions allocate memory and return ownership to the caller, including `ft_calloc`, `ft_strdup`, `ft_substr`, `ft_strjoin`, `ft_strtrim`, `ft_split`, `ft_itoa`, and `ft_strmapi`. Check allocation results before use and release returned memory with `free` when it is no longer needed.
+
+`ft_split` returns a null-terminated array whose individual strings and outer array must be freed by the caller. Linked-list cleanup functions accept callbacks so callers can define how node content is released.
+
+## Testing and Code Quality
+
+The repository does not currently include an automated test suite, linter configuration, formatter configuration, or CI workflow. The verified build validation command is:
+
+```bash
+cd src
+make fclean
+make
+make bonus
+```
+
+The Makefile treats compiler warnings as errors through `-Wall -Wextra -Werror`.
+
+For additional validation, compare behavior with the corresponding standard-library functions and test boundary cases such as empty strings, overlapping memory ranges, allocation failures, and list cleanup. These are suggested checks, not repository-provided test commands.
+
+## API and Runtime Services
+
+This project is a local static library. It does not expose HTTP endpoints, authentication flows, database schemas, network services, Docker configuration, or production deployment manifests.
+
+## Troubleshooting
+
+### `make: command not found`
+
+Install a Make implementation through your operating system's development tools, then verify it with:
+
+```bash
+make --version
+```
+
+### `cc: command not found`
+
+Install a C compiler toolchain and verify that `cc` is available:
+
+```bash
+cc --version
+```
+
+### `fatal error: libft.h: No such file or directory`
+
+Compile from `src/` with `-I.` or provide the correct include path, such as `-Isrc` when compiling from the repository root.
+
+### `cannot find -lft`
+
+Build the archive first and ensure the linker search path points to the directory containing `libft.a`:
+
+```bash
+cd src
+make
+```
+
+Then use `-Lsrc -lft` from the repository root or `-L. -lft` from `src/`.
+
+### Bonus functions are unavailable
+
+Build the mandatory library and then run:
+
+```bash
+cd src
+make bonus
+```
+
+## Contributing
+
+Contributions should preserve the small, focused design of the library and the existing compiler requirements.
+
+1. Fork the repository.
+2. Create a descriptive branch:
+
+   ```bash
+   git checkout -b fix/short-description
+   ```
+
+3. Make the change in `src/` and update documentation when the public API changes.
+4. Build both mandatory and bonus targets:
+
+   ```bash
+   make -C src fclean
+   make -C src
+   make -C src bonus
+   ```
+
+5. Review the diff and commit with a clear message.
+6. Push the branch and open a pull request explaining the behavior change and validation performed.
+
+Please do not commit generated `.o` files or `libft.a` unless the project explicitly changes its distribution policy.
+
+## Roadmap
+
+No project roadmap or planned feature list is defined in the repository. Suggested improvements such as automated tests, CI, and a documented license are intentionally not presented as committed plans.
+
+## License
+
+No license file is currently present in the repository. Add a license before distributing or reusing this project outside the intended coursework context.
 
 ## Author
 
-**A-chem**  
-42 Network student — C programming and systems development.
+**A-chem**
+
+- GitHub: [@A-chem](https://github.com/A-chem)
+
+## Acknowledgments
+
+- [42](https://www.42.fr/) for the Libft project specification and curriculum.
+- The official project subject included at [`Subject/en.subject.pdf`](Subject/en.subject.pdf).
